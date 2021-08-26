@@ -1,12 +1,30 @@
+import os
 import discord
 from discord.ext import commands, tasks
-import youtube_dl
-import os
 import asyncio
 import hcskr
+import youtube_dl
 
 
 bot = commands.Bot(command_prefix='/')
+
+
+@bot.command()
+async def load(ctx, extension):
+    bot.load_extension(f'commands.{extension}')
+
+@bot.command()
+async def unload(ctx, extension):
+    bot.unload_extension(f'commands.{extension}')
+
+@bot.command()
+async def reload(ctx, extension):
+    bot.unload_extension(f'commands.{extension}')
+    bot.load_extension(f'commands.{extension}')
+
+for filename in os.listdir('./commands'):
+    if filename.endswith('.py'):
+        bot.load_extension(f"commands.{filename[:-3]}")
 
 
 @bot.event
@@ -15,27 +33,6 @@ async def on_ready():
     print(f"봇 이름: {bot.user.name}")
     print(f"ID: {bot.user.id}")
     await bot.change_presence(activity=discord.Game("/도움말"))
-
-
-@bot.command()
-async def 도움말(ctx):
-    wormhelp = embed=discord.Embed(title="도움말", description="Help", color=0xff5733)
-    embed.add_field(name="/도움말", value="도움말을 표시합니다.", inline=False)
-    embed.add_field(name="/지우기 (개수)", value="설정한 만큼 최근 대화기록을 삭제합니다.", inline=False)
-    embed.add_field(name="/따라하기", value="내가 한 말을 따라합니다.", inline=False)
-    embed.set_footer(text="Made by @Avella#8448")
-    await ctx.send(embed=wormhelp)
-
-
-@bot.command(aliases=["clear", "delete"])
-async def 지우기(ctx, amount=1):
-    await ctx.channel.purge(limit=amount+1)
-    await ctx.send(f'{ctx.author} 님이 "{amount}" 만큼의 메세지를 삭제합니다.')
-
-
-@bot.command()
-async def 따라하기(ctx, *, text):
-    await ctx.send(text)
 
 
 @bot.command()
@@ -102,4 +99,5 @@ async def stop(ctx):
     voice.stop()
 
 
-bot.run("NzQ4MTE1MDAzMTM1MDk4OTEw.X0YuZA.uWI8RYzNcNdkc-UEOCblv_N-9sk")
+TOKEN = "NzQ4MTE1MDAzMTM1MDk4OTEw.X0YuZA.uWI8RYzNcNdkc-UEOCblv_N-9sk"
+bot.run(TOKEN)
